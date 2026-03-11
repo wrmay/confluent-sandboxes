@@ -43,3 +43,9 @@ module "app_gateway" {
   ssl_pfx_path     = var.app_gateway_ssl_pfx_path
   ssl_pfx_password = var.app_gateway_ssl_pfx_password
 }
+
+module "azuread_apps" {
+  source              = "./modules/azuread_apps"
+  name_prefix         = var.resource_name_prefix
+  c3_frontend_hostname = "c3.lab.local"   # the hostname you chose for your application gateway cert.
+}
