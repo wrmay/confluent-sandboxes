@@ -4,10 +4,14 @@ A Confluent Platform sandbox on Azure Kubernetes Service
 This folder contains Terraform definitions for the following:
 - An AKS Cluster
 - An Azure Container Registry
+- Entra (AD) - creates 2 entra apps
+  - one as an identity provider for oAuth based interactive logins
+  - one with a client id and secret for internal, non-interactive auth
 - Networking
   - All Ingress is via an Application Gateway running TLS (you will provide the server cert)
   - A VNet with 3 subnets: one for the App Gateway, one for the AKS cluster and one for future use
   - Each subnet is configured with appropriate Network Security Groups 
+  
 
 
 # Prerequisites
