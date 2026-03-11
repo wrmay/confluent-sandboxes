@@ -1,0 +1,491 @@
+
+Terraform used the selected providers to generate the following execution
+plan. Resource actions are indicated with the following symbols:
+  [32m+[0m create[0m
+
+Terraform will perform the following actions:
+
+[1m  # module.acr.azurerm_container_registry.this[0m will be created
+[0m  [32m+[0m[0m resource "azurerm_container_registry" "this" {
+      [32m+[0m[0m admin_enabled                 = false
+      [32m+[0m[0m admin_password                = (sensitive value)
+      [32m+[0m[0m admin_username                = (known after apply)
+      [32m+[0m[0m encryption                    = (known after apply)
+      [32m+[0m[0m export_policy_enabled         = true
+      [32m+[0m[0m id                            = (known after apply)
+      [32m+[0m[0m location                      = "centralus"
+      [32m+[0m[0m login_server                  = (known after apply)
+      [32m+[0m[0m name                          = "rmayacr"
+      [32m+[0m[0m network_rule_bypass_option    = "AzureServices"
+      [32m+[0m[0m network_rule_set              = (known after apply)
+      [32m+[0m[0m public_network_access_enabled = true
+      [32m+[0m[0m resource_group_name           = "rmay-rg"
+      [32m+[0m[0m retention_policy              = (known after apply)
+      [32m+[0m[0m sku                           = "Premium"
+      [32m+[0m[0m trust_policy                  = (known after apply)
+      [32m+[0m[0m zone_redundancy_enabled       = false
+    }
+
+[1m  # module.aks.azurerm_kubernetes_cluster.this[0m will be created
+[0m  [32m+[0m[0m resource "azurerm_kubernetes_cluster" "this" {
+      [32m+[0m[0m api_server_authorized_ip_ranges     = (known after apply)
+      [32m+[0m[0m current_kubernetes_version          = (known after apply)
+      [32m+[0m[0m dns_prefix                          = "rmay-aks"
+      [32m+[0m[0m fqdn                                = (known after apply)
+      [32m+[0m[0m http_application_routing_zone_name  = (known after apply)
+      [32m+[0m[0m id                                  = (known after apply)
+      [32m+[0m[0m image_cleaner_enabled               = false
+      [32m+[0m[0m image_cleaner_interval_hours        = 48
+      [32m+[0m[0m kube_admin_config                   = (sensitive value)
+      [32m+[0m[0m kube_admin_config_raw               = (sensitive value)
+      [32m+[0m[0m kube_config                         = (sensitive value)
+      [32m+[0m[0m kube_config_raw                     = (sensitive value)
+      [32m+[0m[0m kubernetes_version                  = (known after apply)
+      [32m+[0m[0m location                            = "centralus"
+      [32m+[0m[0m name                                = "rmay-aks"
+      [32m+[0m[0m node_resource_group                 = (known after apply)
+      [32m+[0m[0m node_resource_group_id              = (known after apply)
+      [32m+[0m[0m oidc_issuer_url                     = (known after apply)
+      [32m+[0m[0m portal_fqdn                         = (known after apply)
+      [32m+[0m[0m private_cluster_enabled             = false
+      [32m+[0m[0m private_cluster_public_fqdn_enabled = false
+      [32m+[0m[0m private_dns_zone_id                 = (known after apply)
+      [32m+[0m[0m private_fqdn                        = (known after apply)
+      [32m+[0m[0m public_network_access_enabled       = true
+      [32m+[0m[0m resource_group_name                 = "rmay-rg"
+      [32m+[0m[0m role_based_access_control_enabled   = true
+      [32m+[0m[0m run_command_enabled                 = true
+      [32m+[0m[0m sku_tier                            = "Free"
+      [32m+[0m[0m support_plan                        = "KubernetesOfficial"
+      [32m+[0m[0m workload_identity_enabled           = false
+
+      [32m+[0m[0m default_node_pool {
+          [32m+[0m[0m kubelet_disk_type    = (known after apply)
+          [32m+[0m[0m max_pods             = (known after apply)
+          [32m+[0m[0m name                 = "system"
+          [32m+[0m[0m node_count           = 3
+          [32m+[0m[0m node_labels          = (known after apply)
+          [32m+[0m[0m orchestrator_version = (known after apply)
+          [32m+[0m[0m os_disk_size_gb      = (known after apply)
+          [32m+[0m[0m os_disk_type         = "Managed"
+          [32m+[0m[0m os_sku               = (known after apply)
+          [32m+[0m[0m scale_down_mode      = "Delete"
+          [32m+[0m[0m type                 = "VirtualMachineScaleSets"
+          [32m+[0m[0m ultra_ssd_enabled    = false
+          [32m+[0m[0m vm_size              = "Standard_D4s_v5"
+          [32m+[0m[0m vnet_subnet_id       = (known after apply)
+          [32m+[0m[0m workload_runtime     = (known after apply)
+        }
+
+      [32m+[0m[0m identity {
+          [32m+[0m[0m principal_id = (known after apply)
+          [32m+[0m[0m tenant_id    = (known after apply)
+          [32m+[0m[0m type         = "SystemAssigned"
+        }
+
+      [32m+[0m[0m network_profile {
+          [32m+[0m[0m dns_service_ip          = (known after apply)
+          [32m+[0m[0m docker_bridge_cidr      = (known after apply)
+          [32m+[0m[0m ebpf_data_plane         = (known after apply)
+          [32m+[0m[0m ip_versions             = (known after apply)
+          [32m+[0m[0m load_balancer_sku       = "standard"
+          [32m+[0m[0m network_data_plane      = (known after apply)
+          [32m+[0m[0m network_mode            = (known after apply)
+          [32m+[0m[0m network_plugin          = "azure"
+          [32m+[0m[0m network_policy          = (known after apply)
+          [32m+[0m[0m outbound_ip_address_ids = (known after apply)
+          [32m+[0m[0m outbound_ip_prefix_ids  = (known after apply)
+          [32m+[0m[0m outbound_type           = "loadBalancer"
+          [32m+[0m[0m pod_cidr                = (known after apply)
+          [32m+[0m[0m pod_cidrs               = (known after apply)
+          [32m+[0m[0m service_cidr            = (known after apply)
+          [32m+[0m[0m service_cidrs           = (known after apply)
+        }
+    }
+
+[1m  # module.aks.azurerm_role_assignment.acr_pull[0m will be created
+[0m  [32m+[0m[0m resource "azurerm_role_assignment" "acr_pull" {
+      [32m+[0m[0m id                               = (known after apply)
+      [32m+[0m[0m name                             = (known after apply)
+      [32m+[0m[0m principal_id                     = (known after apply)
+      [32m+[0m[0m principal_type                   = (known after apply)
+      [32m+[0m[0m role_definition_id               = (known after apply)
+      [32m+[0m[0m role_definition_name             = "AcrPull"
+      [32m+[0m[0m scope                            = (known after apply)
+      [32m+[0m[0m skip_service_principal_aad_check = (known after apply)
+    }
+
+[1m  # module.app_gateway[0].azurerm_application_gateway.this[0m will be created
+[0m  [32m+[0m[0m resource "azurerm_application_gateway" "this" {
+      [32m+[0m[0m id                          = (known after apply)
+      [32m+[0m[0m location                    = "centralus"
+      [32m+[0m[0m name                        = "rmay-appgw"
+      [32m+[0m[0m private_endpoint_connection = (known after apply)
+      [32m+[0m[0m resource_group_name         = "rmay-rg"
+
+      [32m+[0m[0m backend_address_pool {
+          [32m+[0m[0m fqdns        = [
+              [32m+[0m[0m "c3.internal.example",
+            ]
+          [32m+[0m[0m id           = (known after apply)
+          [32m+[0m[0m ip_addresses = []
+          [32m+[0m[0m name         = "c3-backend-pool"
+        }
+
+      [32m+[0m[0m backend_http_settings {
+          [32m+[0m[0m cookie_based_affinity               = "Enabled"
+          [32m+[0m[0m id                                  = (known after apply)
+          [32m+[0m[0m name                                = "https-settings"
+          [32m+[0m[0m pick_host_name_from_backend_address = true
+          [32m+[0m[0m port                                = 9021
+          [32m+[0m[0m probe_id                            = (known after apply)
+          [32m+[0m[0m protocol                            = "Https"
+          [32m+[0m[0m request_timeout                     = 60
+          [32m+[0m[0m trusted_root_certificate_names      = []
+        }
+
+      [32m+[0m[0m frontend_ip_configuration {
+          [32m+[0m[0m id                            = (known after apply)
+          [32m+[0m[0m name                          = "public-frontend-ip"
+          [32m+[0m[0m private_ip_address            = (known after apply)
+          [32m+[0m[0m private_ip_address_allocation = "Dynamic"
+          [32m+[0m[0m private_link_configuration_id = (known after apply)
+          [32m+[0m[0m public_ip_address_id          = (known after apply)
+        }
+
+      [32m+[0m[0m frontend_port {
+          [32m+[0m[0m id   = (known after apply)
+          [32m+[0m[0m name = "https-port"
+          [32m+[0m[0m port = 443
+        }
+
+      [32m+[0m[0m gateway_ip_configuration {
+          [32m+[0m[0m id        = (known after apply)
+          [32m+[0m[0m name      = "appgw-ipcfg"
+          [32m+[0m[0m subnet_id = (known after apply)
+        }
+
+      [32m+[0m[0m http_listener {
+          [32m+[0m[0m frontend_ip_configuration_id   = (known after apply)
+          [32m+[0m[0m frontend_ip_configuration_name = "public-frontend-ip"
+          [32m+[0m[0m frontend_port_id               = (known after apply)
+          [32m+[0m[0m frontend_port_name             = "https-port"
+          [32m+[0m[0m host_names                     = []
+          [32m+[0m[0m id                             = (known after apply)
+          [32m+[0m[0m name                           = "https-listener"
+          [32m+[0m[0m protocol                       = "Https"
+          [32m+[0m[0m ssl_certificate_id             = (known after apply)
+          [32m+[0m[0m ssl_certificate_name           = "c3-cert"
+          [32m+[0m[0m ssl_profile_id                 = (known after apply)
+        }
+
+      [32m+[0m[0m request_routing_rule {
+          [32m+[0m[0m backend_address_pool_id    = (known after apply)
+          [32m+[0m[0m backend_address_pool_name  = "c3-backend-pool"
+          [32m+[0m[0m backend_http_settings_id   = (known after apply)
+          [32m+[0m[0m backend_http_settings_name = "https-settings"
+          [32m+[0m[0m http_listener_id           = (known after apply)
+          [32m+[0m[0m http_listener_name         = "https-listener"
+          [32m+[0m[0m id                         = (known after apply)
+          [32m+[0m[0m name                       = "c3-rule"
+          [32m+[0m[0m redirect_configuration_id  = (known after apply)
+          [32m+[0m[0m rewrite_rule_set_id        = (known after apply)
+          [32m+[0m[0m rule_type                  = "Basic"
+          [32m+[0m[0m url_path_map_id            = (known after apply)
+        }
+
+      [32m+[0m[0m sku {
+          [32m+[0m[0m capacity = 2
+          [32m+[0m[0m name     = "Standard_v2"
+          [32m+[0m[0m tier     = "Standard_v2"
+        }
+
+      [32m+[0m[0m ssl_certificate {
+          # At least one attribute in this block is (or was) sensitive,
+          # so its contents will not be displayed.
+        }
+    }
+
+[1m  # module.app_gateway[0].azurerm_public_ip.this[0][0m will be created
+[0m  [32m+[0m[0m resource "azurerm_public_ip" "this" {
+      [32m+[0m[0m allocation_method       = "Static"
+      [32m+[0m[0m ddos_protection_mode    = "VirtualNetworkInherited"
+      [32m+[0m[0m fqdn                    = (known after apply)
+      [32m+[0m[0m id                      = (known after apply)
+      [32m+[0m[0m idle_timeout_in_minutes = 4
+      [32m+[0m[0m ip_address              = (known after apply)
+      [32m+[0m[0m ip_version              = "IPv4"
+      [32m+[0m[0m location                = "centralus"
+      [32m+[0m[0m name                    = "rmay-appgw-pip"
+      [32m+[0m[0m resource_group_name     = "rmay-rg"
+      [32m+[0m[0m sku                     = "Standard"
+      [32m+[0m[0m sku_tier                = "Regional"
+    }
+
+[1m  # module.networking.azurerm_network_security_group.aks[0m will be created
+[0m  [32m+[0m[0m resource "azurerm_network_security_group" "aks" {
+      [32m+[0m[0m id                  = (known after apply)
+      [32m+[0m[0m location            = "centralus"
+      [32m+[0m[0m name                = "rmay-nsg-aks"
+      [32m+[0m[0m resource_group_name = "rmay-rg"
+      [32m+[0m[0m security_rule       = [
+          [32m+[0m[0m {
+              [32m+[0m[0m access                                     = "Allow"
+              [32m+[0m[0m description                                = ""
+              [32m+[0m[0m destination_address_prefix                 = "Internet"
+              [32m+[0m[0m destination_address_prefixes               = []
+              [32m+[0m[0m destination_application_security_group_ids = []
+              [32m+[0m[0m destination_port_range                     = "*"
+              [32m+[0m[0m destination_port_ranges                    = []
+              [32m+[0m[0m direction                                  = "Outbound"
+              [32m+[0m[0m name                                       = "Allow_All_Outbound"
+              [32m+[0m[0m priority                                   = 100
+              [32m+[0m[0m protocol                                   = "*"
+              [32m+[0m[0m source_address_prefix                      = "VirtualNetwork"
+              [32m+[0m[0m source_address_prefixes                    = []
+              [32m+[0m[0m source_application_security_group_ids      = []
+              [32m+[0m[0m source_port_range                          = "*"
+              [32m+[0m[0m source_port_ranges                         = []
+            },
+          [32m+[0m[0m {
+              [32m+[0m[0m access                                     = "Allow"
+              [32m+[0m[0m description                                = ""
+              [32m+[0m[0m destination_address_prefix                 = "VirtualNetwork"
+              [32m+[0m[0m destination_address_prefixes               = []
+              [32m+[0m[0m destination_application_security_group_ids = []
+              [32m+[0m[0m destination_port_range                     = "*"
+              [32m+[0m[0m destination_port_ranges                    = []
+              [32m+[0m[0m direction                                  = "Inbound"
+              [32m+[0m[0m name                                       = "Allow_AzureLoadBalancer_Inbound"
+              [32m+[0m[0m priority                                   = 110
+              [32m+[0m[0m protocol                                   = "*"
+              [32m+[0m[0m source_address_prefix                      = "AzureLoadBalancer"
+              [32m+[0m[0m source_address_prefixes                    = []
+              [32m+[0m[0m source_application_security_group_ids      = []
+              [32m+[0m[0m source_port_range                          = "*"
+              [32m+[0m[0m source_port_ranges                         = []
+            },
+          [32m+[0m[0m {
+              [32m+[0m[0m access                                     = "Allow"
+              [32m+[0m[0m description                                = ""
+              [32m+[0m[0m destination_address_prefix                 = "VirtualNetwork"
+              [32m+[0m[0m destination_address_prefixes               = []
+              [32m+[0m[0m destination_application_security_group_ids = []
+              [32m+[0m[0m destination_port_range                     = "*"
+              [32m+[0m[0m destination_port_ranges                    = []
+              [32m+[0m[0m direction                                  = "Inbound"
+              [32m+[0m[0m name                                       = "Allow_VNet_Inbound"
+              [32m+[0m[0m priority                                   = 100
+              [32m+[0m[0m protocol                                   = "*"
+              [32m+[0m[0m source_address_prefix                      = "VirtualNetwork"
+              [32m+[0m[0m source_address_prefixes                    = []
+              [32m+[0m[0m source_application_security_group_ids      = []
+              [32m+[0m[0m source_port_range                          = "*"
+              [32m+[0m[0m source_port_ranges                         = []
+            },
+        ]
+    }
+
+[1m  # module.networking.azurerm_network_security_group.appgw[0m will be created
+[0m  [32m+[0m[0m resource "azurerm_network_security_group" "appgw" {
+      [32m+[0m[0m id                  = (known after apply)
+      [32m+[0m[0m location            = "centralus"
+      [32m+[0m[0m name                = "rmay-nsg-appgw"
+      [32m+[0m[0m resource_group_name = "rmay-rg"
+      [32m+[0m[0m security_rule       = [
+          [32m+[0m[0m {
+              [32m+[0m[0m access                                     = "Allow"
+              [32m+[0m[0m description                                = ""
+              [32m+[0m[0m destination_address_prefix                 = "*"
+              [32m+[0m[0m destination_address_prefixes               = []
+              [32m+[0m[0m destination_application_security_group_ids = []
+              [32m+[0m[0m destination_port_range                     = "*"
+              [32m+[0m[0m destination_port_ranges                    = []
+              [32m+[0m[0m direction                                  = "Outbound"
+              [32m+[0m[0m name                                       = "Allow_All_Outbound"
+              [32m+[0m[0m priority                                   = 100
+              [32m+[0m[0m protocol                                   = "*"
+              [32m+[0m[0m source_address_prefix                      = "*"
+              [32m+[0m[0m source_address_prefixes                    = []
+              [32m+[0m[0m source_application_security_group_ids      = []
+              [32m+[0m[0m source_port_range                          = "*"
+              [32m+[0m[0m source_port_ranges                         = []
+            },
+          [32m+[0m[0m {
+              [32m+[0m[0m access                                     = "Allow"
+              [32m+[0m[0m description                                = ""
+              [32m+[0m[0m destination_address_prefix                 = "*"
+              [32m+[0m[0m destination_address_prefixes               = []
+              [32m+[0m[0m destination_application_security_group_ids = []
+              [32m+[0m[0m destination_port_range                     = "443"
+              [32m+[0m[0m destination_port_ranges                    = []
+              [32m+[0m[0m direction                                  = "Inbound"
+              [32m+[0m[0m name                                       = "Allow_HTTPS_From_Internet"
+              [32m+[0m[0m priority                                   = 100
+              [32m+[0m[0m protocol                                   = "Tcp"
+              [32m+[0m[0m source_address_prefix                      = "Internet"
+              [32m+[0m[0m source_address_prefixes                    = []
+              [32m+[0m[0m source_application_security_group_ids      = []
+              [32m+[0m[0m source_port_range                          = "*"
+              [32m+[0m[0m source_port_ranges                         = []
+            },
+        ]
+    }
+
+[1m  # module.networking.azurerm_network_security_group.cc_privatelink[0m will be created
+[0m  [32m+[0m[0m resource "azurerm_network_security_group" "cc_privatelink" {
+      [32m+[0m[0m id                  = (known after apply)
+      [32m+[0m[0m location            = "centralus"
+      [32m+[0m[0m name                = "rmay-nsg-cc-privatelink"
+      [32m+[0m[0m resource_group_name = "rmay-rg"
+      [32m+[0m[0m security_rule       = [
+          [32m+[0m[0m {
+              [32m+[0m[0m access                                     = "Allow"
+              [32m+[0m[0m description                                = ""
+              [32m+[0m[0m destination_address_prefix                 = "VirtualNetwork"
+              [32m+[0m[0m destination_address_prefixes               = []
+              [32m+[0m[0m destination_application_security_group_ids = []
+              [32m+[0m[0m destination_port_range                     = "*"
+              [32m+[0m[0m destination_port_ranges                    = []
+              [32m+[0m[0m direction                                  = "Inbound"
+              [32m+[0m[0m name                                       = "Allow_VNet_Inbound"
+              [32m+[0m[0m priority                                   = 100
+              [32m+[0m[0m protocol                                   = "*"
+              [32m+[0m[0m source_address_prefix                      = "VirtualNetwork"
+              [32m+[0m[0m source_address_prefixes                    = []
+              [32m+[0m[0m source_application_security_group_ids      = []
+              [32m+[0m[0m source_port_range                          = "*"
+              [32m+[0m[0m source_port_ranges                         = []
+            },
+          [32m+[0m[0m {
+              [32m+[0m[0m access                                     = "Allow"
+              [32m+[0m[0m description                                = ""
+              [32m+[0m[0m destination_address_prefix                 = "VirtualNetwork"
+              [32m+[0m[0m destination_address_prefixes               = []
+              [32m+[0m[0m destination_application_security_group_ids = []
+              [32m+[0m[0m destination_port_range                     = "*"
+              [32m+[0m[0m destination_port_ranges                    = []
+              [32m+[0m[0m direction                                  = "Outbound"
+              [32m+[0m[0m name                                       = "Allow_VNet_Outbound"
+              [32m+[0m[0m priority                                   = 100
+              [32m+[0m[0m protocol                                   = "*"
+              [32m+[0m[0m source_address_prefix                      = "VirtualNetwork"
+              [32m+[0m[0m source_address_prefixes                    = []
+              [32m+[0m[0m source_application_security_group_ids      = []
+              [32m+[0m[0m source_port_range                          = "*"
+              [32m+[0m[0m source_port_ranges                         = []
+            },
+        ]
+    }
+
+[1m  # module.networking.azurerm_subnet.aks[0m will be created
+[0m  [32m+[0m[0m resource "azurerm_subnet" "aks" {
+      [32m+[0m[0m address_prefixes                               = [
+          [32m+[0m[0m "10.9.0.0/20",
+        ]
+      [32m+[0m[0m default_outbound_access_enabled                = true
+      [32m+[0m[0m enforce_private_link_endpoint_network_policies = (known after apply)
+      [32m+[0m[0m enforce_private_link_service_network_policies  = (known after apply)
+      [32m+[0m[0m id                                             = (known after apply)
+      [32m+[0m[0m name                                           = "rmay-snet-aks"
+      [32m+[0m[0m private_endpoint_network_policies              = (known after apply)
+      [32m+[0m[0m private_endpoint_network_policies_enabled      = (known after apply)
+      [32m+[0m[0m private_link_service_network_policies_enabled  = (known after apply)
+      [32m+[0m[0m resource_group_name                            = "rmay-rg"
+      [32m+[0m[0m virtual_network_name                           = "rmay-vnet"
+    }
+
+[1m  # module.networking.azurerm_subnet.appgw[0m will be created
+[0m  [32m+[0m[0m resource "azurerm_subnet" "appgw" {
+      [32m+[0m[0m address_prefixes                               = [
+          [32m+[0m[0m "10.9.16.0/24",
+        ]
+      [32m+[0m[0m default_outbound_access_enabled                = true
+      [32m+[0m[0m enforce_private_link_endpoint_network_policies = (known after apply)
+      [32m+[0m[0m enforce_private_link_service_network_policies  = (known after apply)
+      [32m+[0m[0m id                                             = (known after apply)
+      [32m+[0m[0m name                                           = "rmay-snet-appgw"
+      [32m+[0m[0m private_endpoint_network_policies              = (known after apply)
+      [32m+[0m[0m private_endpoint_network_policies_enabled      = (known after apply)
+      [32m+[0m[0m private_link_service_network_policies_enabled  = (known after apply)
+      [32m+[0m[0m resource_group_name                            = "rmay-rg"
+      [32m+[0m[0m virtual_network_name                           = "rmay-vnet"
+    }
+
+[1m  # module.networking.azurerm_subnet.cc_privatelink[0m will be created
+[0m  [32m+[0m[0m resource "azurerm_subnet" "cc_privatelink" {
+      [32m+[0m[0m address_prefixes                               = [
+          [32m+[0m[0m "10.9.17.0/24",
+        ]
+      [32m+[0m[0m default_outbound_access_enabled                = true
+      [32m+[0m[0m enforce_private_link_endpoint_network_policies = (known after apply)
+      [32m+[0m[0m enforce_private_link_service_network_policies  = (known after apply)
+      [32m+[0m[0m id                                             = (known after apply)
+      [32m+[0m[0m name                                           = "rmay-snet-cc-privatelink"
+      [32m+[0m[0m private_endpoint_network_policies              = (known after apply)
+      [32m+[0m[0m private_endpoint_network_policies_enabled      = (known after apply)
+      [32m+[0m[0m private_link_service_network_policies_enabled  = (known after apply)
+      [32m+[0m[0m resource_group_name                            = "rmay-rg"
+      [32m+[0m[0m virtual_network_name                           = "rmay-vnet"
+    }
+
+[1m  # module.networking.azurerm_subnet_network_security_group_association.aks[0m will be created
+[0m  [32m+[0m[0m resource "azurerm_subnet_network_security_group_association" "aks" {
+      [32m+[0m[0m id                        = (known after apply)
+      [32m+[0m[0m network_security_group_id = (known after apply)
+      [32m+[0m[0m subnet_id                 = (known after apply)
+    }
+
+[1m  # module.networking.azurerm_subnet_network_security_group_association.appgw[0m will be created
+[0m  [32m+[0m[0m resource "azurerm_subnet_network_security_group_association" "appgw" {
+      [32m+[0m[0m id                        = (known after apply)
+      [32m+[0m[0m network_security_group_id = (known after apply)
+      [32m+[0m[0m subnet_id                 = (known after apply)
+    }
+
+[1m  # module.networking.azurerm_subnet_network_security_group_association.cc_privatelink[0m will be created
+[0m  [32m+[0m[0m resource "azurerm_subnet_network_security_group_association" "cc_privatelink" {
+      [32m+[0m[0m id                        = (known after apply)
+      [32m+[0m[0m network_security_group_id = (known after apply)
+      [32m+[0m[0m subnet_id                 = (known after apply)
+    }
+
+[1m  # module.networking.azurerm_virtual_network.this[0m will be created
+[0m  [32m+[0m[0m resource "azurerm_virtual_network" "this" {
+      [32m+[0m[0m address_space       = [
+          [32m+[0m[0m "10.9.0.0/16",
+        ]
+      [32m+[0m[0m dns_servers         = (known after apply)
+      [32m+[0m[0m guid                = (known after apply)
+      [32m+[0m[0m id                  = (known after apply)
+      [32m+[0m[0m location            = "centralus"
+      [32m+[0m[0m name                = "rmay-vnet"
+      [32m+[0m[0m resource_group_name = "rmay-rg"
+      [32m+[0m[0m subnet              = (known after apply)
+    }
+
+[1m  # module.resource_group.azurerm_resource_group.this[0m will be created
+[0m  [32m+[0m[0m resource "azurerm_resource_group" "this" {
+      [32m+[0m[0m id       = (known after apply)
+      [32m+[0m[0m location = "centralus"
+      [32m+[0m[0m name     = "rmay-rg"
+    }
+
+[1mPlan:[0m 16 to add, 0 to change, 0 to destroy.
+[0m
+Changes to Outputs:
+  [32m+[0m[0m acr_name                 = "rmayacr"
+  [32m+[0m[0m aks_cluster_name         = "rmay-aks"
+  [32m+[0m[0m app_gateway_id           = [
+      [32m+[0m[0m (known after apply),
+    ]
+  [32m+[0m[0m resource_group_name      = "rmay-rg"
+  [32m+[0m[0m subnet_aks_id            = (known after apply)
+  [32m+[0m[0m subnet_appgw_id          = (known after apply)
+  [32m+[0m[0m subnet_cc_privatelink_id = (known after apply)
+  [32m+[0m[0m vnet_id                  = (known after apply)
+[90m
+─────────────────────────────────────────────────────────────────────────────[0m
+
+Note: You didn't use the -out option to save this plan, so Terraform can't
+guarantee to take exactly these actions if you run "terraform apply" now.

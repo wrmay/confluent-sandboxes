@@ -1,0 +1,7 @@
+keys/
+.terraform/
+terraform.* 
+.terraform.* 
+variables.tf 
+
+

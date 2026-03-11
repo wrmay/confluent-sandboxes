@@ -1,0 +1,65 @@
+variable "location" {
+  type        = string
+  description = "Azure region for all resources"
+  default     = "AZURE REGION HERE (e.g. centralus)"
+}
+
+variable "resource_name_prefix" {
+  type        = string
+  description = "Prefix for resource names"
+  default     = "CHANGE ME"
+}
+
+variable "vnet_cidr" {
+  type        = string
+  description = "CIDR block for the Confluent VNet"
+  default     = "10.9.0.0/16"
+}
+
+variable "aks_node_count" {
+  type        = number
+  description = "Default AKS node count"
+  default     = 3
+}
+
+variable "aks_vm_size" {
+  type        = string
+  description = "AKS node VM size"
+  default     = "Standard_D2s_v5"
+}
+
+variable "enable_app_gateway" {
+  type        = bool
+  description = "Deploy an Azure Application Gateway"
+  default     = true
+}
+
+variable "app_gateway_public" {
+  type        = bool
+  description = "If true, App Gateway has a public frontend IP; otherwise private"
+  default     = true
+}
+
+variable "app_gateway_sku" {
+  type        = string
+  description = "App Gateway SKU name (e.g. WAF_v2, Standard_v2)"
+  default     = "Standard_v2"
+}
+
+variable "app_gateway_capacity" {
+  type        = number
+  description = "Initial App Gateway instance count (autoscaling min)"
+  default     = 2
+}
+
+variable "app_gateway_ssl_pfx_path" {
+  type        = string
+  description = "Path to local PFX file for App Gateway SSL cert"
+  default     = "keys/c3-frontend.pfx"
+}
+
+variable "app_gateway_ssl_pfx_password" {
+  type        = string
+  description = "Password for the ssl pfx file - do not set - use a TF_VAR environment variable"
+  default     = ""
+}
