@@ -75,3 +75,38 @@ When the output looks right to you, deploy the Azure resources.
 terraform apply
 ```
 
+When it's done, the outputs will be printed to the console.  _You will need 
+these!_ .  Save the outputs to _outputs.txt_ .  
+
+## Upload the Confluent images to Azure Container Registry (ACR)
+
+If you are not already logged in to Azure with the CLI: `az login`
+Next, login to the ACR instance you just provisioned.  You will need the 
+acr name from _outputs.txt_ . : `az acr login --name <acr-name>` .
+
+## Set Up Kubectl
+
+Values for the \<placeholders\> below can be obtrained from _outputs.txt_ . 
+
+You can choose any value you like for the kubernetes \<namespace\> placeholder.
+
+```bash
+az aks get-credentials -g <resource_group_name> -n <aks_cluster_name>
+
+kubectl create namespace <namespace>
+kubectl config set-context --current --namespace=<namespace>
+```
+
+## Create Pull Secret for the AKS Cluster
+
+```bash
+az acr credential show -n "<acr_name>" --query "passwords[0].value" -o tsv > /tmp/acr_pwd
+az acr credential show -n "<acr_name>" --query "username" -o tsv > /tmp/acr_username
+
+kubectl -n <namespace> create secret docker-registry acr-credentials \
+  --docker-server=<acr_name>.azurecr.io \
+  --docker-username="${cat /tmp/acr_username}" \
+  --docker-password="${cat /tmp/acr_pwd}" \
+  --docker-email="unused@example.com"
+```
+
