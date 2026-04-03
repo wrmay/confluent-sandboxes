@@ -84,6 +84,14 @@ If you are not already logged in to Azure with the CLI: `az login`
 Next, login to the ACR instance you just provisioned.  You will need the 
 acr name from _outputs.txt_ . : `az acr login --name <acr-name>` .
 
+Then download the images locally and push them to your Azure Container Registry
+
+```bash
+docker pull confluentinc/cp-server:7.8.x
+docker tag confluentinc/cp-server:7.8.x <acr_name>.azurecr.io/confluent/cp-server:7.8.x
+docker push <acr_name>.azurecr.io/confluent/cp-server:7.8.x
+```
+
 ## Set Up Kubectl
 
 Values for the \<placeholders\> below can be obtrained from _outputs.txt_ . 
