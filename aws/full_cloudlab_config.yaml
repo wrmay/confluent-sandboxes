@@ -1,0 +1,110 @@
+# This example create a vpc with 2 subnets, one in us-east-2a and one in us-east-2b.  There are
+# 2 types of machines, which are listed under "roles": a ClusterMember and a LoadGenerator.  Roles can have
+# any name you choose so long as they do not contain spaces or special characters.  The  instance type, ami and
+# other details are specified under the role.
+#
+# AMIs can be specified with either ami_id or ami_name.  The ami_id is the Amazon image id, which is *region specific*.
+# A region agnostic approach is supported via ssm parameters.  If ami_id is not provided, then the ami_name will be
+# used to look up the image id for the region you are in.
+#
+# See https://medium.com/@josiahsicad/list-of-ec2-image-public-ssm-parameters-3338f83d4ec8 for an explanation of
+# how to look up SSM parameters for various operating systems. This sample illustrates both approaches.
+#
+# Number of instances of each type, and placement within subnets is specified under "subnets". In the example
+# below, 2 instances of the ClusterMember type will be placed in us-east-2a and will have IP addresses
+# 10.0.1.101 and 10.0.1.102.  The us-east-2b region will contain 2 more ClusterMember instances at
+# 10.0.2.101 and 10.0.2.102, and a LoadGenerator instance at 10.0.2.201
+#
+---
+region: us-east-2
+cidr: 10.0.0.0/16  # must be a /16 subnet, must be a non-routable IP (e.g. 10.*.*.*, 192.168.*.*)
+roles:
+  zookeeper:   # role names are copied directly into the CloudFormation template and should not contain special characters
+    instance_type: t3.medium
+    ami_name: /aws/service/canonical/ubuntu/server/jammy/stable/20260218/amd64/hvm/ebs-gp2/ami-id
+    ssh_user: ubuntu
+    open_ports: [7770]
+  broker:
+    instance_type: r5.xlarge
+    ami_name: /aws/service/canonical/ubuntu/server/jammy/stable/20260218/amd64/hvm/ebs-gp2/ami-id
+    ssh_user: ubuntu
+    open_ports: [8090,7771]
+  schema:
+    instance_type: t3.medium
+    ami_name: /aws/service/canonical/ubuntu/server/jammy/stable/20260218/amd64/hvm/ebs-gp2/ami-id
+    ssh_user: ubuntu
+    open_ports: [8081,7772]
+  connect:
+    instance_type: t3.large
+    ami_name: /aws/service/canonical/ubuntu/server/jammy/stable/20260218/amd64/hvm/ebs-gp2/ami-id
+    ssh_user: ubuntu
+    open_ports: [8083,7773]
+  rest:
+    instance_type: t3.medium
+    ami_name: /aws/service/canonical/ubuntu/server/jammy/stable/20260218/amd64/hvm/ebs-gp2/ami-id
+    ssh_user: ubuntu
+    open_ports: [8082]
+  c3:
+    instance_type: r5.xlarge
+    ami_name: /aws/service/canonical/ubuntu/server/jammy/stable/20260218/amd64/hvm/ebs-gp2/ami-id
+    ssh_user: ubuntu
+    open_ports: [9021]
+  ksql:
+    instance_type: t3.large
+    ami_name: /aws/service/canonical/ubuntu/server/jammy/stable/20260218/amd64/hvm/ebs-gp2/ami-id
+    ssh_user: ubuntu
+    open_ports: [8088,7774]
+  client:
+    instance_type: t3.large
+    ami_name: /aws/service/canonical/ubuntu/server/jammy/stable/20260218/amd64/hvm/ebs-gp2/ami-id
+    ssh_user: ubuntu
+    open_ports: []
+  # prometheus:
+  #   instance_type: t3.medium
+  #   ami_name: /aws/service/canonical/ubuntu/server/jammy/stable/20260218/amd64/hvm/ebs-gp2/ami-id
+  #   ssh_user: ubuntu
+  #   open_ports: []
+  # grafana:
+  #   instance_type: t3.large
+  #   ami_name: /aws/service/canonical/ubuntu/server/jammy/stable/20260218/amd64/hvm/ebs-gp2/ami-id
+  #   ssh_user: ubuntu
+  #   open_ports: [3000]
+subnets:
+  - az: a                  # will be appended to region, e.g. us-east-2a
+    cidr: 10.0.1.0/24      # must be a /24
+    servers:
+      - private_ip_suffixes: [101]   
+        role: zookeeper
+      - private_ip_suffixes: [111]   
+        role: broker
+      - private_ip_suffixes: [121]   
+        role: schema
+      - private_ip_suffixes: [141]   
+        role: connect
+      - private_ip_suffixes: [161]   
+        role: zookeeper
+  - az: b                  # will be appended to region, e.g. us-east-2a
+    cidr: 10.0.2.0/24      # must be a /24
+    servers:
+      - private_ip_suffixes: [101]   
+        role: zookeeper
+      - private_ip_suffixes: [111]   
+        role: broker
+      - private_ip_suffixes: [121]   
+        role: schema
+      - private_ip_suffixes: [151]   
+        role: ksql
+  - az: c                  # will be appended to region, e.g. us-east-2a
+    cidr: 10.0.3.0/24      # must be a /24
+    servers:
+      - private_ip_suffixes: [101]   
+        role: zookeeper
+      - private_ip_suffixes: [111]   
+        role: broker
+      - private_ip_suffixes: [131]   
+        role: schema
+      - private_ip_suffixes: [141]   
+        role: connect
+      - private_ip_suffixes: [151]   
+        role: ksql
+
