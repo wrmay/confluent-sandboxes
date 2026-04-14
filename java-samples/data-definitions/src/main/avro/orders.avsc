@@ -1,0 +1,53 @@
+{
+  "type": "record",
+  "name": "Order",
+  "namespace": "io.confluent.sample",
+  "fields": [
+    { "name": "id",  "type": "int" },
+    {
+      "name":  "timestamp",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      }
+    },
+    {
+      "name": "customer_nickname",
+      "type": "string",
+      "maxLength": 20
+    },
+    { "name":  "items", "type":
+      {
+        "type": "array",
+        "items": {
+          "name": "items",
+          "type": "record",
+          "fields": [
+            {
+              "name": "item",
+              "type" :
+              {
+                "type": "enum",
+                "name": "menu_items",
+                "symbols": [
+                  "Burger",
+                  "MegaBurger",
+                  "TurkeyBurger",
+                  "VeggieBurger",
+                  "FrenchFriesRegular",
+                  "FrenchFriesLarge",
+                  "Water",
+                  "SoftDrink"
+                ]
+              }
+            },
+            {
+              "name": "quantity",
+              "type": "int"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}
