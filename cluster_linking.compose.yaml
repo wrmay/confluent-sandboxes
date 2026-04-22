@@ -172,6 +172,9 @@ services:
             SCHEMA_REGISTRY_HOST_NAME: schema-registry-A1
             SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: kafka-A1:9092,kafka-A2:9092,kafka-A3:9092
             SCHEMA_REGISTRY_LISTENERS: http://0.0.0.0:8081
+            SCHEMA_REGISTRY_RESOURCE_EXTENSION_CLASS: io.confluent.schema.exporter.SchemaExporterResourceExtension
+            SCHEMA_REGISTRY_KAFKASTORE_UPDATE_HANDLERS: io.confluent.schema.exporter.storage.SchemaExporterUpdateHandler
+            SCHEMA_REGISTRY_PASSWORD_ENCODER_SECRET: changeme
         ports:
             - "8081:8081"
 
@@ -244,6 +247,7 @@ services:
             KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
             KAFKA_CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: kafka-B1:9092,kafka-B2:9092,kafka-B3:9092
             KAFKA_CONFLUENT_BALANCER_ENABLE: false
+            KAFKA_CONFLUENT_CLUSTER_LINK_ENABLE: true
             # KAFKA_GROUP_COORDINATOR_REBALANCE_PROTOCOLS: classic,consumer
             # KAFKA_TRANSACTION_PARTITION_VERIFICATION_ENABLE: false
         cap_add:
@@ -282,6 +286,7 @@ services:
             KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
             KAFKA_CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: kafka-B1:9092,kafka-B2:9092,kafka-B3:9092
             KAFKA_CONFLUENT_BALANCER_ENABLE: false
+            KAFKA_CONFLUENT_CLUSTER_LINK_ENABLE: true
             # KAFKA_GROUP_COORDINATOR_REBALANCE_PROTOCOLS: classic,consumer
             # KAFKA_TRANSACTION_PARTITION_VERIFICATION_ENABLE: false
         cap_add:
@@ -320,6 +325,7 @@ services:
             KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
             KAFKA_CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: kafka-B1:9192,kafka-B2:9192,kafka-B3:9192
             KAFKA_CONFLUENT_BALANCER_ENABLE: false
+            KAFKA_CONFLUENT_CLUSTER_LINK_ENABLE: true
             # KAFKA_GROUP_COORDINATOR_REBALANCE_PROTOCOLS: classic,consumer
             # KAFKA_TRANSACTION_PARTITION_VERIFICATION_ENABLE: false
         cap_add:
@@ -348,6 +354,9 @@ services:
             SCHEMA_REGISTRY_HOST_NAME: schema-registry-B1
             SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: kafka-B1:9192,kafka-B2:9192,kafka-B3:9192
             SCHEMA_REGISTRY_LISTENERS: http://0.0.0.0:8181
+            SCHEMA_REGISTRY_RESOURCE_EXTENSION_CLASS: io.confluent.schema.exporter.SchemaExporterResourceExtension
+            SCHEMA_REGISTRY_KAFKASTORE_UPDATE_HANDLERS: io.confluent.schema.exporter.storage.SchemaExporterUpdateHandler
+            SCHEMA_REGISTRY_PASSWORD_ENCODER_SECRET: changeme
         ports:
             - "8181:8181"
 
@@ -376,6 +385,23 @@ services:
         ports:
             - "9021:9021"
         profiles: []
+
+    initializer:
+        image: cnfltraining/training-tools:7.5
+        restart: always
+        hostname: tools
+        container_name: tools
+        volumes:
+            - ${PWD}:/apps
+        environment:
+            CLASSPATH: "/usr/share/java/monitoring-interceptors/monitoring-interceptors-7.5.3.jar"
+        working_dir: /apps
+        command: /bin/bash
+        tty: true
+        profiles:
+        - inactive
+
+
 
     tools:
         image: cnfltraining/training-tools:7.5

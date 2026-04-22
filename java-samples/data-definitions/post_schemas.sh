@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# So needing to do this seems rediculously difficult.  How can we make this easier 
+# This seems rediculously difficult.  How can we make this easier ?
 #
 SCHEMA_DIR=`dirname $0`/src/main/avro
 SCHEMA_AS_STRING=`cat $SCHEMA_DIR/orders.avsc | sed 's/\"/\\\"/g' | tr -d '\n'`
