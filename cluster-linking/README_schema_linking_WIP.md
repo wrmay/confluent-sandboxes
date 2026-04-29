@@ -44,9 +44,9 @@ side initiates connections to the other.
 > `INBOUND` side must be created first!_
 
 # References 
-[Configure Cluster Linking on Confluent Platform](https://docs.confluent.io/platform/current/multi-dc-deployments/cluster-linking/configs.html)
-[Illuminating Information on Bidirectional vs Source Initiated Links](https://docs.confluent.io/platform/current/multi-dc-deployments/cluster-linking/faqs-cp.html#does-cluster-linking-support-bidirectional-links-between-two-clusters)
-[Schema Linking](https://docs.confluent.io/platform/current/schema-registry/schema-linking-cp.html)
+* [Configure Cluster Linking on Confluent Platform](https://docs.confluent.io/platform/current/multi-dc-deployments/cluster-linking/configs.html)
+* [Illuminating Information on Bidirectional vs Source Initiated Links](https://docs.confluent.io/platform/current/multi-dc-deployments/cluster-linking/faqs-cp.html#does-cluster-linking-support-bidirectional-links-between-two-clusters)
+* [Schema Linking](https://docs.confluent.io/platform/current/schema-registry/schema-linking-cp.html)
 
 
 # Labs
@@ -55,14 +55,6 @@ side initiates connections to the other.
 
 In this lab, we'll create a traditional unidirectional cluster link.  A docker 
 compose configuration with 2 clusters has been provided.
-
-Inspect `cluster_linking.compose.yaml`.  In particular, note the following 
-in the _destination_ cluser (B cluster) broker configuration.
-
-```
-KAFKA_CONFLUENT_CLUSTER_LINK_ENABLE: true
-```
-
 
 Bring up the lab environment with the command below
 ```
