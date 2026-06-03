@@ -1,0 +1,106 @@
+apiVersion: platform.confluent.io/v1beta1
+kind: KRaftController
+metadata:
+  name: kraftcontroller
+  namespace: default
+spec:
+  dataVolumeCapacity: 10G
+  image:
+    application: docker.io/confluentinc/cp-server:8.2.1
+    init: confluentinc/confluent-init-container:3.1.0
+  replicas: 1
+  dependencies:
+    metricsClient:
+      url: http://controlcenter.default.svc.cluster.local:9090
+---
+apiVersion: platform.confluent.io/v1beta1
+kind: Kafka
+metadata:
+  name: kafka
+  namespace: default
+spec:
+  replicas: 3
+  image:
+    application: confluentinc/cp-server:8.2.1
+    init: confluentinc/confluent-init-container:3.1.0
+  dataVolumeCapacity: 100Gi
+  dependencies:
+    kRaftController:
+      clusterRef:
+        name: kraftcontroller
+    metricsClient:
+      url: http://controlcenter.default.svc.cluster.local:9090
+---
+apiVersion: platform.confluent.io/v1beta1
+kind: Connect
+metadata:
+  name: connect
+  namespace: default
+spec:
+  replicas: 1
+  image:
+    application: confluentinc/cp-server-connect:8.2.1
+    init: confluentinc/confluent-init-container:3.1.0
+  dependencies:
+    kafka:
+      bootstrapEndpoint: kafka:9071
+---
+apiVersion: platform.confluent.io/v1beta1
+kind: ControlCenter
+metadata:
+  name: controlcenter
+  namespace: default
+spec:
+  replicas: 1
+  image:
+    application: confluentinc/cp-enterprise-control-center-next-gen:2.5.0
+    init: confluentinc/confluent-init-container:3.1.0
+  dataVolumeCapacity: 10Gi
+  configOverrides:
+      server:
+        - confluent.controlcenter.cmf.enable=true
+        - confluent.controlcenter.cmf.url=http://cmf-service.default.svc.cluster.local
+  dependencies:
+    schemaRegistry:
+      url: http://schemaregistry.default.svc.cluster.local:8081
+    connect:
+    - name: connect
+      url: http://connect.default.svc.cluster.local:8083
+    kafka:
+      bootstrapEndpoint: http://kafka.default.svc.cluster.local:9071
+    prometheusClient:
+      url: http://controlcenter.default.svc.cluster.local:9090
+    alertManagerClient:
+      url: http://controlcenter.default.svc.cluster.local:9093
+  services:
+    prometheus:
+      image: confluentinc/cp-enterprise-prometheus:2.2.0
+      pvc:
+        dataVolumeCapacity: 10Gi
+    alertmanager:
+      image: confluentinc/cp-enterprise-alertmanager:2.2.0
+---
+apiVersion: platform.confluent.io/v1beta1
+kind: SchemaRegistry
+metadata:
+  name: schemaregistry
+  namespace: default
+spec:
+  replicas: 1
+  image:
+    application: confluentinc/cp-schema-registry:8.2.1
+    init: confluentinc/confluent-init-container:3.1.0
+# ---
+# apiVersion: platform.confluent.io/v1beta1
+# kind: KafkaRestProxy
+# metadata:
+#   name: kafkarestproxy
+#   namespace: default
+# spec:
+#   replicas: 1
+#   image:
+#     application: confluentinc/cp-kafka-rest:8.1.0
+#     init: confluentinc/confluent-init-container:3.1.0
+#   dependencies:
+#     schemaRegistry:
+#       url: http://schemaregistry.default.svc.cluster.local:8081
