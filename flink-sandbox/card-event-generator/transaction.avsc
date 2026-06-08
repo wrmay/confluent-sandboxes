@@ -1,0 +1,28 @@
+{
+    "namespace": "io.confluent.sample",
+    "name": "card_transaction",
+    "type": "record",
+    "fields": [
+        {
+            "name": "transaction_id",
+            "type": "string"
+        },
+        {
+            "name": "card_number",
+            "type": "string"
+        },
+        {
+            "name": "merchant_id",
+            "type": "int"
+        },
+        {
+            "name": "amount",
+            "type": {
+                "type": "bytes",
+                "logicalType": "decimal",
+                "scale": 2,
+                "precision": 9
+            }
+        }
+    ]
+}
