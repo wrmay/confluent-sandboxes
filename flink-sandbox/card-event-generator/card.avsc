@@ -21,17 +21,20 @@
         },
         {
             "name": "expiration",
-            "type": "record",
-            "fields": [
-                {
-                    "name": "year",
-                    "type": "int"
-                },
-                {
-                    "name": "month",
-                    "type" : "int"
-                }
-            ]
+            "type": {
+                "type": "record",
+                "name": "YearMonth",
+                "fields": [
+                    {
+                        "name": "year",
+                        "type": "int"
+                    },
+                    {
+                        "name": "month",
+                        "type" : "int"
+                    }
+                ]
+            }
         },
         {
             "name": "verification_code",
