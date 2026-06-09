@@ -101,3 +101,10 @@ Set up the topic and the schema for the topic
 ```
 kubectl apply -f card-event-generator/setup.yaml
 ```
+
+Build the card-event-generator image inside of the minikube environment.
+
+```
+eval $(minikube docker-env)
+docker build -t event-generator:dev .
+```
