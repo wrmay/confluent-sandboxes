@@ -79,12 +79,19 @@ kraftcontroller-0                                   1/1     Running   0         
 schemaregistry-0                                    1/1     Running   0               3m41s
 ```
 
- Once everything has come up you can access the control center at 
- http://localhost:9021 , but first, you must forward the port.
+## Set Up Telepresence
 
- ```
-  kubectl port-forward controlcenter-0 9021:9021 &
- ```
+Telepresence is a great way to test locally and it can also replace the 
+need to set up kubernetes port-forwards.  
+
+!TODO - more detail here
+1. install it 
+2. install the agent `telepresence helm install`
+3. create the tunnel `telepresence connect`
+
+Now you can access control center at http://controlcenter.default.svc.cluster.local:9021
+as if you're laptop were running in the kubernetes cluster!
+
 
 # Set up the Card Event Generator 
 
@@ -106,5 +113,8 @@ Build the card-event-generator image inside of the minikube environment.
 
 ```
 eval $(minikube docker-env)
+cd card-event-generator
 docker build -t event-generator:dev .
 ```
+
+
