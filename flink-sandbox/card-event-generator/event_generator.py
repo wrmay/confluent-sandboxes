@@ -1,10 +1,18 @@
+from decimal import Decimal
 import os
 import random
 import sys
 import time
+from typing import Callable
 import uuid
 
+from confluent_kafka import Producer
+
 from cards import fake_cards
+from confluent_kafka.serialization import StringSerializer
+from confluent_kafka.serializing_producer import SerializingProducer
+from confluent_kafka.schema_registry import SchemaRegistryClient
+from confluent_kafka.schema_registry.avro import AvroSerializer
 
 
 #
@@ -22,7 +30,7 @@ from cards import fake_cards
 def fake_txn(ccnum: str):
     result = dict()
     result["card_number"] = ccnum
-    result["merchant_id"] = f'{random.randrange(0, 9999):04d}'    
+    result["merchant_id"] = random.randrange(0, 9999)
     result["transaction_id"] = str(uuid.uuid4())
 
     rnum = random.random()
@@ -35,12 +43,20 @@ def fake_txn(ccnum: str):
     else:
         amt = random.randrange(1, 100)
 
-    result["amount"] = amt
+    result["amount"] = Decimal(amt)
 
     return result
 
+
+def delivery_report(err, msg):
+    if err is not None:
+        print(f"Delivery failed: {err}")
+    # else:
+    #     print(f"Delivered to {msg.topic()} [{msg.partition()}] at offset {msg.offset()}")
+
+
 if __name__ == '__main__':
-    for env_var in ["KAFKA_BOOTSTRAP_SERVERS", "KAFKA_SCHEMA_REGISTRY_URL","KAFKA_TRANSACTION_TOPIC", "KAFKA_CARD_TOPIC", "CARD_COUNT", "TRANSACTIONS_PER_SEC"]:
+    for env_var in ["KAFKA_BOOTSTRAP_SERVERS", "KAFKA_SCHEMA_REGISTRY_URL","KAFKA_TRANSACTION_TOPIC", "KAFKA_CARD_TOPIC", "CARD_COUNT", "TXNS_PER_SEC"]:
         if env_var not in os.environ:
             sys.exit(f"Missing required environment variable: {env_var}")
 
@@ -52,25 +68,49 @@ if __name__ == '__main__':
     card_topic = os.getenv('KAFKA_CARD_TOPIC')
     transaction_topic = os.getenv('KAFKA_TRANSACTION_TOPIC')
 
+    # create the fake cards 
     cards = fake_cards(card_count)
-    
-    kafka_config = {
-        "bootstrap.servers": bootstrap_servers,
-        "schema.registry.url": schema_registry_url,
-        "value.serializer": "io.confluent.kafka.serializers.KafkaAvroSerializer",
-        "key.serializer" : "io.confluent.kafka.serializers.KafkaStringSerializer"
-    }
-    producer = Producer(kafka_config)
-    for card in cards:
-        # should check return val
-        producer.produce(card_topic, card, key=card['card_number'])
-        
-    producer.flush()
-    print(f'produced {card_count} cards to {card_topic}')
 
-    seconds_per_txn = 1/ txns_per_sec
-    start = time.time()
+    # create the schema registry client and the Avro serializer
+    with SchemaRegistryClient({"url": schema_registry_url}) as schema_registry_client:
+        value_serializer = AvroSerializer(
+            schema_registry_client=schema_registry_client,
+            conf={
+                "auto.register.schemas": False,
+                "use.latest.version": True,
+            }
+        )
 
-    # here
+        kafka_config = {
+            "bootstrap.servers": bootstrap_servers,
+            "value.serializer": value_serializer,
+            "key.serializer" : StringSerializer("utf_8")
+        }
+        with SerializingProducer(kafka_config) as producer:
+            seconds_per_txn = 1/ txns_per_sec
+            start = time.time()
+            next_txn_due = start + seconds_per_txn
+            produced = 0
+            while True:
+                sleep_time = next_txn_due - time.time()
+                if sleep_time < -5:
+                    print("Can't keep up, exiting")
+                    break
+                elif sleep_time > .01:
+                    time.sleep(sleep_time)
 
-    producer.close()
+                cnum = random.choice(cards)["card_number"]
+                producer.produce(
+                    topic=transaction_topic, 
+                    value=fake_txn(cnum),
+                    key=cnum,
+                    on_delivery=delivery_report)
+                
+                produced += 1
+                if produced % 1000 == 0:
+                    print(f'produced {produced} transactions so far ...')
+                    producer.poll(2)
+
+                next_txn_due += seconds_per_txn
+
+

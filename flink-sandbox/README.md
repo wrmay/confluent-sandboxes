@@ -93,7 +93,7 @@ Add the required configuration to the cluster as config maps
 
 ```
 kubectl create configmap cardfraud-env --from-env-file=./card-event-generator/env.properties
-kubectl create configmap cardfraud-transaction-schema --from-file=schema=./card-event-generator/card.avsc
+kubectl create configmap cardfraud-transaction-schema --from-file=schema=./card-event-generator/transaction.avsc
 ```
 
 Set up the topic and the schema for the topic
