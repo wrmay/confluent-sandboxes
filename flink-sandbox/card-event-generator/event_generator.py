@@ -1,4 +1,5 @@
 from decimal import Decimal
+import json
 import os
 import random
 import sys
@@ -14,17 +15,31 @@ from confluent_kafka.serializing_producer import SerializingProducer
 from confluent_kafka.schema_registry import SchemaRegistryClient
 from confluent_kafka.schema_registry.avro import AvroSerializer
 
-
 #
-# Requires the following environment variables
-# 
-# CARD_COUNT
-# TXNS_PER_SEC
-# KAFKA_BOOTSTRAP_SERVERS
-# KAFKA_SCHEMA_REGISTRY_URL
-# KAFKA_TRANSACTION_TOPIC
-# KAFKA_CARD_TOPIC
+# Reads all configuration from "config.json" in the current directory .
+# A sample is shown below.
 #
+#{
+#    "kafka": {
+#        "bootstrap.servers" : "abc.def:9092",
+#        "security.protocol": "SASL_SSL",
+#         "sasl.mechanisms" : "PLAIN",
+#         "sasl.username": "zzzzzzz",
+#         "sasl.password" : "qqqqqqqqqqqqqqqqqq",
+#         "session.timeout.ms": 45000,
+#         "client.id": "card_event_generator"
+#     },
+#     "schema_registry": {
+#         "url": "https://schemas.acme",
+#         "basic.auth.credentials.source": "USER_INFO",
+#         "basic.auth.user.info": "uuuu:zzzzzzzzzzzzzzzzzz"
+#     },
+#     "event_generator": {
+#         "card_count": 100,
+#         "txns_per_sec": 100,
+#         "transaction_topic": "transactions"
+#     }
+# }
 
 
 def fake_txn(ccnum: str):
@@ -56,36 +71,48 @@ def delivery_report(err, msg):
 
 
 if __name__ == '__main__':
-    for env_var in ["KAFKA_BOOTSTRAP_SERVERS", "KAFKA_SCHEMA_REGISTRY_URL","KAFKA_TRANSACTION_TOPIC", "KAFKA_CARD_TOPIC", "CARD_COUNT", "TXNS_PER_SEC"]:
-        if env_var not in os.environ:
-            sys.exit(f"Missing required environment variable: {env_var}")
+    if os.path.isfile("config.json"):
+        with open('config.json', "r") as f:
+            config = json.load(f)
+    
+    else:
+        sys.exit(f"Required configuration file, 'config.json' was not found. Exiting.")
 
-    # could stand to validate these values
-    card_count = int(os.getenv('CARD_COUNT'))
-    txns_per_sec = int(os.getenv('TXNS_PER_SEC'))
-    bootstrap_servers = os.getenv('KAFKA_BOOTSTRAP_SERVERS')
-    schema_registry_url = os.getenv('KAFKA_SCHEMA_REGISTRY_URL')
-    card_topic = os.getenv('KAFKA_CARD_TOPIC')
-    transaction_topic = os.getenv('KAFKA_TRANSACTION_TOPIC')
+    if 'event_generator' in config:
+        event_generator_config = config['event_generator']
+        card_count = event_generator_config['card_count']
+        txns_per_sec = event_generator_config['txns_per_sec']
+        transaction_topic = event_generator_config['transaction_topic']
+    else:
+        sys.exit("Required config entry 'event_generator' is not present.")
+
+    if 'kafka' in config:
+        kafka_config = config['kafka']
+    else:
+        sys.exit("Required config entry 'kafka' is not present.")
+        
+    if 'schema_registry' in config:
+        schema_registry_config = config['schema_registry']
+    else:
+        sys.exit("Required config 'schema_registry' is not present.")
+
+    if os.path.isfile("transaction.avsc"):
+        with open("transaction.avsc") as f:
+            schema_str = f.read()
+    else:
+        sys.exit("Required file: 'transaction.avsc' not found.")
 
     # create the fake cards 
     cards = fake_cards(card_count)
 
     # create the schema registry client and the Avro serializer
-    with SchemaRegistryClient({"url": schema_registry_url}) as schema_registry_client:
+    with SchemaRegistryClient(schema_registry_config) as schema_registry_client:
         value_serializer = AvroSerializer(
             schema_registry_client=schema_registry_client,
-            conf={
-                "auto.register.schemas": False,
-                "use.latest.version": True,
-            }
+            schema_str = schema_str
         )
 
-        kafka_config = {
-            "bootstrap.servers": bootstrap_servers,
-            "value.serializer": value_serializer,
-            "key.serializer" : StringSerializer("utf_8")
-        }
+        kafka_config["value.serializer"] = value_serializer
         with SerializingProducer(kafka_config) as producer:
             seconds_per_txn = 1/ txns_per_sec
             start = time.time()

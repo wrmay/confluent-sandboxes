@@ -117,4 +117,24 @@ cd card-event-generator
 docker build -t event-generator:dev .
 ```
 
+Finally, deploy it
+
+```
+kubectl apply -f event-generator-deployment.yaml
+```
+
+# Deploy a Flink Enviroment 
+
+Had to do several things to get this working including 
+- change the compute pool to -cp8
+- create the target topic and copy the schema from transactions onto it
+- Use a hint in the query
+
+```
+INSERT INTO large_transactions
+/*+ OPTIONS('kafka.producer.transaction.timeout.ms'='60000') */
+SELECT *
+FROM transactions
+WHERE amount > 499.99;
+```
 
