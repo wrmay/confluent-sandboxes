@@ -6,6 +6,14 @@ Create a minikube environment.
 minikube start --cpus=8 --disk-size=50g --memory=16384
 ```
 
+For a `podman` based setup on MacOS, first, create the podman machine, then start minikube as shown below
+
+```
+podman machine init --cpus 8 --disk-size 50 --memory 16384 --rootful 
+podman machine start
+minikube start --driver=podman --container-runtime=containerd
+```
+
 Install the cert-manager for kubernetes.  This is not necessarily needed
 for CP but it is needed for Confluent Manager for Apache Flink (cmf) so we
 go ahead and install it.
@@ -74,7 +82,7 @@ schemaregistry-0                                      1/1     Running   0       
 
 Now, to see control center, you can either do a port-forward via kubectl, or 
 use [Telepresence](https://telepresence.io/docs/install/client).   Telepresence 
-is and extremely valuable aid to local k8s development. Install it!  If you 
+is an extremely valuable aid to local k8s development. Install it!  If you 
 are using a Mac, you can `brew install telepresenceio/telepresence/telepresence-oss`.
 
 Now install the Telepresence traffic manager into your cluster and connect.
