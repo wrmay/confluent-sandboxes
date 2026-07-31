@@ -1,7 +1,22 @@
-__Note:__ be sure to upgrade to the latest Confluent CLI before beginning. You've been warned!
+# Overview
 
-Based on https://docs.confluent.io/cp-flink/current/get-started/get-started-statement.html
-and https://github.com/confluentinc/confluent-kubernetes-examples/tree/master/quickstart-deploy/kraft-quickstart
+This sandbox sets up a CP Kafka cluster and a CP Flink cluster in Kubernetes.
+The example was tested with minikube.
+
+`confluent-platform.yaml` deploys 
+- 1 KRaft Controller
+- 3 Brokers
+- 1 Schema Registry instance
+- 1 Connect instance 
+  
+This lab derives from  
+- https://docs.confluent.io/cp-flink/current/get-started/get-started-statement.html
+- https://github.com/confluentinc/confluent-kubernetes-examples/tree/master/quickstart-deploy/kraft-quickstart
+
+
+# Start a Flink and Kafka Cluster
+
+__Note:__ be sure to upgrade to the latest Confluent CLI before beginning. You've been warned!
 
 
 ```
@@ -9,17 +24,19 @@ brew install confluentinc/tap/cli
 ```
 
 Create a minikube environment.
+
 ```
 minikube start --cpus=8 --disk-size=50g --memory=16384
 ```
 
 Install cert. manager.
+
 ```
 kubectl create -f https://github.com/jetstack/cert-manager/releases/download/v1.18.2/cert-manager.yaml
 ```
 
-Install the Confluent Helm repo, the Flink K8s operator and the 
-Confluent Manager for Flink (and the one for Confluent).
+Install the Confluent Helm repo, the Flink K8s operator, the Confluent Manager 
+for Flink and the CFK operator
 
 ```
 helm repo add confluentinc https://packages.confluent.io/helm
@@ -31,55 +48,93 @@ helm upgrade --install operator confluentinc/confluent-for-kubernetes --set imag
 
 _Wait for the new pods to start running_.
 
------------ SKIP ----------
-Port forward the CMF service so it can be accessed locally.  Set 
-CONFLUENT_CMF_URL to point to it.
 ```
-kubectl port-forward svc/cmf-service 8080:80&
-export CONFLUENT_CMF_URL=http://localhost:8080 
+wrmay@H3X1M9JRWG flink-sandbox % kubectl get pods
+NAME                                                READY   STATUS    RESTARTS   AGE
+confluent-manager-for-apache-flink-cc5cd65c-xtzx7   1/1     Running   0          4m27s
+confluent-operator-698fdcdf74-gvbtt                 1/1     Running   0          4m15s
+flink-kubernetes-operator-784987f745-p9cs4          2/2     Running   0          4m44s
 ```
-
-Create a Flink environment
-```
-confluent flink environment create test --kubernetes-namespace default
-Handling connection for 8080
-+--------------------------------+--------------------------------+
-| Name                           | test                           |
-| Kubernetes Namespace           | default                        |
-| Created Time                   | 2026-05-26 16:50:20.598176     |
-|                                | +0000 UTC                      |
-| Updated Time                   | 2026-05-26 16:50:20.598176833  |
-|                                | +0000 UTC                      |
-| Flink Application Defaults     | null                           |
-| Flink Compute Pool Defaults    | null                           |
-| Detached Statement Defaults    | null                           |
-| Interactive Statement Defaults | null                           |
-+--------------------------------+--------------------------------+
-```
- and create a compute pool
-
- ```
-confluent flink compute-pool create compute-pool.json --environment test
-Handling connection for 8080
-+---------------+--------------------------+
-| Creation Time | 2026-05-26T16:52:17.748Z |
-| Name          | pool                     |
-| Type          | DEDICATED                |
-| Phase         | DEDICATED                |
-+---------------+--------------------------+
------------ END SKIP ----------
-
- ```
 
  Deploy Confluent Platform 
+
  ```
  kubectl apply -f confluent-platform.yaml
  ```
 
- Once everything has come up you can access the control center at 
- http://localhost:9021 , but first, you must forward the port.
+_Wait for everything to come up cleanly_
 
- ```
-  kubectl port-forward controlcenter-0 9021:9021 &
- ```
+```
+wrmay@H3X1M9JRWG flink-sandbox % kubectl get pods
+NAME                                                READY   STATUS    RESTARTS        AGE
+confluent-manager-for-apache-flink-cc5cd65c-xtzx7   1/1     Running   0               12m
+confluent-operator-698fdcdf74-gvbtt                 1/1     Running   0               12m
+connect-0                                           1/1     Running   1 (4m28s ago)   6m56s
+controlcenter-0                                     3/3     Running   0               6m56s
+flink-kubernetes-operator-784987f745-p9cs4          2/2     Running   0               12m
+kafka-0                                             1/1     Running   0               4m26s
+kafka-1                                             1/1     Running   0               4m26s
+kafka-2                                             1/1     Running   0               4m26s
+kraftcontroller-0                                   1/1     Running   0               6m56s
+schemaregistry-0                                    1/1     Running   0               3m41s
+```
+
+## Set Up Telepresence
+
+Telepresence is a great way to test locally and it can also replace the 
+need to set up kubernetes port-forwards.  
+
+!TODO - more detail here
+1. install it 
+2. install the agent `telepresence helm install`
+3. create the tunnel `telepresence connect`
+
+Now you can access control center at http://controlcenter.default.svc.cluster.local:9021
+as if you're laptop were running in the kubernetes cluster!
+
+
+# Set up the Card Event Generator 
+
+
+Add the required configuration to the cluster as config maps
+
+```
+kubectl create configmap cardfraud-env --from-env-file=./card-event-generator/env.properties
+kubectl create configmap cardfraud-transaction-schema --from-file=schema=./card-event-generator/transaction.avsc
+```
+
+Set up the topic and the schema for the topic
+
+```
+kubectl apply -f card-event-generator/setup.yaml
+```
+
+Build the card-event-generator image inside of the minikube environment.
+
+```
+eval $(minikube docker-env)
+cd card-event-generator
+docker build -t event-generator:dev .
+```
+
+Finally, deploy it
+
+```
+kubectl apply -f event-generator-deployment.yaml
+```
+
+# Deploy a Flink Enviroment 
+
+Had to do several things to get this working including 
+- change the compute pool to -cp8
+- create the target topic and copy the schema from transactions onto it
+- Use a hint in the query
+
+```
+INSERT INTO large_transactions
+/*+ OPTIONS('kafka.producer.transaction.timeout.ms'='60000') */
+SELECT *
+FROM transactions
+WHERE amount > 499.99;
+```
 
