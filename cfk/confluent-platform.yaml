@@ -1,17 +1,15 @@
+---
 apiVersion: platform.confluent.io/v1beta1
-kind: KRaftController
+kind: Zookeeper
 metadata:
-  name: kraftcontroller
-  namespace: default
+  name: zookeeper
 spec:
-  dataVolumeCapacity: 10G
-  image:
-    application: confluentinc/cp-server:7.8.8
-    init: confluentinc/confluent-init-container:3.3.0
   replicas: 1
-  dependencies:
-    metricsClient:
-      url: http://controlcenter.default.svc.cluster.local:9090
+  image:
+    application: confluentinc/cp-zookeeper:7.9.8
+    init: confluentinc/confluent-init-container:3.1.0
+  dataVolumeCapacity: 10Gi
+  logVolumeCapacity: 10Gi
 ---
 apiVersion: platform.confluent.io/v1beta1
 kind: Kafka
@@ -21,29 +19,47 @@ metadata:
 spec:
   replicas: 3
   image:
-    application: confluentinc/cp-server:7.8.8
+    application: confluentinc/cp-server:7.9.8
     init: confluentinc/confluent-init-container:3.3.0
   dataVolumeCapacity: 100Gi
+  configOverrides:
+    server:
+      - confluent.telemetry.external.client.metrics.push.enabled=true
+      - confluent.telemetry.external.client.metrics.delta.temporality=false
+      - confluent.telemetry.external.client.metrics.subscription.interval.ms.list=60000
+      - confluent.telemetry.external.client.metrics.subscription.metrics.list=org.apache.kafka.consumer.fetch.manager.fetch.latency.avg,org.apache.kafka.consumer.connection.creation.total,org.apache.kafka.consumer.fetch.manager.fetch.total,org.apache.kafka.consumer.fetch.manager.bytes.consumed.rate,org.apache.kafka.producer.bufferpool.wait.ratio,org.apache.kafka.producer.record.queue.time.avg,org.apache.kafka.producer.request.latency.avg,org.apache.kafka.producer.produce.throttle.time.avg,org.apache.kafka.producer.connection.creation.total,org.apache.kafka.producer.request.total,org.apache.kafka.producer.topic.byte.rate
+      - metric.reporters=io.confluent.telemetry.reporter.TelemetryReporter
+      - confluent.telemetry.exporter._c3.type=http
+      - confluent.telemetry.exporter._c3.enabled=true
+      - confluent.telemetry.exporter._c3.client.base.url=http://controlcenter.default.svc.cluster.local:9090/api/v1/otlp
+      - confluent.telemetry.exporter._c3.client.compression=gzip
+      - confluent.telemetry.exporter._c3.api.key=dummy
+      - confluent.telemetry.exporter._c3.api.secret=dummy
+      - confluent.telemetry.exporter._c3.buffer.pending.batches.max=80
+      - confluent.telemetry.exporter._c3.buffer.batch.items.max=4000
+      - confluent.telemetry.exporter._c3.buffer.inflight.submissions.max=10
+      - confluent.telemetry.metrics.collector.interval.ms=60000
+      - confluent.telemetry.remoteconfig._confluent.enabled=false
+      - confluent.consumer.lag.emitter.enabled=true
   dependencies:
-    kRaftController:
-      clusterRef:
-        name: kraftcontroller
+    zookeeper:
+      endpoint: zookeeper.default.svc.cluster.local:2181
     metricsClient:
       url: http://controlcenter.default.svc.cluster.local:9090
 ---
-apiVersion: platform.confluent.io/v1beta1
-kind: Connect
-metadata:
-  name: connect
-  namespace: default
-spec:
-  replicas: 1
-  image:
-    application: confluentinc/cp-server:7.8.8
-    init: confluentinc/confluent-init-container:3.3.0
-  dependencies:
-    kafka:
-      bootstrapEndpoint: kafka:9071
+# apiVersion: platform.confluent.io/v1beta1
+# kind: Connect
+# metadata:
+#   name: connect
+#   namespace: default
+# spec:
+#   replicas: 1
+#   image:
+#     application: confluentinc/cp-server-connect:7.9.8
+#     init: confluentinc/confluent-init-container:3.3.0
+#   dependencies:
+#     kafka:
+#       bootstrapEndpoint: kafka.default.svc.cluster.local:9071
 ---
 apiVersion: platform.confluent.io/v1beta1
 kind: ControlCenter
@@ -63,22 +79,22 @@ spec:
   dependencies:
     schemaRegistry:
       url: http://schemaregistry.default.svc.cluster.local:8081
-    connect:
-    - name: connect
-      url: http://connect.default.svc.cluster.local:8083
+    # connect:
+    # - name: connect
+    #   url: http://connect.default.svc.cluster.local:8083
     kafka:
-      bootstrapEndpoint: http://kafka.default.svc.cluster.local:9071
+      bootstrapEndpoint: kafka.default.svc.cluster.local:9071
     prometheusClient:
       url: http://controlcenter.default.svc.cluster.local:9090
     alertManagerClient:
       url: http://controlcenter.default.svc.cluster.local:9093
   services:
     prometheus:
-      image: confluentinc/cp-enterprise-prometheus:2.2.0
+      image: confluentinc/cp-enterprise-prometheus:2.5.0
       pvc:
         dataVolumeCapacity: 10Gi
     alertmanager:
-      image: confluentinc/cp-enterprise-alertmanager:2.2.0
+      image: confluentinc/cp-enterprise-alertmanager:2.5.0
 ---
 apiVersion: platform.confluent.io/v1beta1
 kind: SchemaRegistry
@@ -88,19 +104,19 @@ metadata:
 spec:
   replicas: 1
   image:
-    application: confluentinc/cp-schema-registry:7.8.8
+    application: confluentinc/cp-schema-registry:7.9.8
     init: confluentinc/confluent-init-container:3.3.0
 ---
-apiVersion: platform.confluent.io/v1beta1
-kind: KafkaRestProxy
-metadata:
-  name: kafkarestproxy
-  namespace: default
-spec:
-  replicas: 1
-  image:
-    application: confluentinc/cp-kafka-rest:7.8.8
-    init: confluentinc/confluent-init-container:3.3.0
-  dependencies:
-    schemaRegistry:
-      url: http://schemaregistry.default.svc.cluster.local:8081
+# apiVersion: platform.confluent.io/v1beta1
+# kind: KafkaRestProxy
+# metadata:
+#   name: kafkarestproxy
+#   namespace: default
+# spec:
+#   replicas: 1
+#   image:
+#     application: confluentinc/cp-kafka-rest:7.9.8
+#     init: confluentinc/confluent-init-container:3.3.0
+#   dependencies:
+#     schemaRegistry:
+#       url: http://schemaregistry.default.svc.cluster.local:8081
