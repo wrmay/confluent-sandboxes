@@ -1,0 +1,20 @@
+{
+    "kafka": {
+        "bootstrap.servers" : "pkc-xxxx.us-east-2.aws.confluent.cloud:9092",
+        "security.protocol": "SASL_SSL",
+        "sasl.mechanisms" : "PLAIN",
+        "sasl.username": "ABC123",
+        "sasl.password" : "DEF456",
+        "session.timeout.ms": 45000,
+        "client.id": "card_event_generator"
+    },
+    "schema_registry": {
+        "url": "https://psrc-xxx.us-east-2.aws.confluent.cloud",
+        "basic.auth.user.info": "xxxx"
+    },
+    "event_generator": {
+        "card_count": 100,
+        "txns_per_sec": 10,
+        "transaction_topic": "transactions"
+    }
+}
