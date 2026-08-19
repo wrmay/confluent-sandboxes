@@ -1,8 +1,6 @@
 # Overview
 
-This is a collection of labs for learning Confluent Platform.
+This is a collection of tools and labs for  Confluent Platform.
 
-[Cluster Linking](./cluster_linking/README.md)
-
-[CFK](./cfk/README.md)
-
+# Table of Contents
+[Create an AKS Cluster](./create_an_aks_cluster.md)
