@@ -1,0 +1,11 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: controlcenter-ingress
+spec:
+  ingressClassName: nginx
+  defaultBackend:
+    service:
+      name: controlcenter-0-internal 
+      port:
+        number: 9021
