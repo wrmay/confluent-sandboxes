@@ -6,7 +6,7 @@ dynamic provision of Flink compute pools.  Although deploying to a local Minikub
 technically works on a sufficiently big laptop, it is a stretch. It is preferrable 
 to deploy it onto a real, multi-node kubernetes cluster.  
 
-See, for example, Create an AKS Cluster](./create_an_aks_cluster.md)
+See, for example, [Create an AKS Cluster](./create_an_aks_cluster.md)
 
 # Minikube Setup
 
