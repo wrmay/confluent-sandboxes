@@ -37,16 +37,23 @@ source azure/.env
 ./azure/create_aks_cluster.sh
 ```
 
-
-
-Now you need to enable aks access via your bastion host.  First you'll 
-need to obtain the full resource id of your bastion host ...
-
+If all goes well, a script will be written to `azure/kubesetup.sh` containing the commands 
+needed to point kubectl at your new AKS cluster and establish a tunnel via the Bastion host.
+A new shell will be opened in which you can run kubectl commands.
 ```
-export $BASTION_HOST_ID=$(az network bastion show --name bastion-secure-gateway --resource-group rmay-private-aks --query id --output tsv)
+chmod +x azure/kubesetup.sh
+./azure/kubesetup.sh 
 ```
-> __Note:__ if you used a different resource name then _bastion-secure-gateway_, 
-be sure to change the command to match!
 
+Verify access to your cluster.
+```
+bash-3.2$ kubectl get nodes
+NAME                                STATUS   ROLES    AGE   VERSION
+aks-nodepool1-19141003-vmss000000   Ready    <none>   58m   v1.35.6
+aks-nodepool1-19141003-vmss000001   Ready    <none>   58m   v1.35.6
+aks-nodepool1-19141003-vmss000002   Ready    <none>   58m   v1.35.6
+aks-nodepool1-19141003-vmss000003   Ready    <none>   58m   v1.35.6
+aks-nodepool1-19141003-vmss000004   Ready    <none>   58m   v1.35.6
+```
 
 

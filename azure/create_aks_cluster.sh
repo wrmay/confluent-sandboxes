@@ -68,11 +68,9 @@ BASTION_ID=$(az network bastion show --name $BASTION_NAME --resource-group $RESO
 echo FINISHED 
 echo 
 
-echo Run the following command to point your local kubectl to the new cluster.
-echo az aks get-credentials -g $RESOURCE_GROUP -n $CLUSTER_NAME 
-echo
-echo Run the following command to initiate a tunnel via Bastion (a new shell will open).
-echo az aks bastion tunnel --name $CLUSTER_NAME --resource-group $RESOURCE_GROUP --bastion "$BASTION_ID"
+echo Run  $SCRIPTDIR/kubesetup.sh to point your local kubectl to the new cluster. 
+echo az aks get-credentials -g $RESOURCE_GROUP -n $CLUSTER_NAME > $SCRIPTDIR/kubesetup.sh 
+echo az aks bastion tunnel --name $CLUSTER_NAME --resource-group $RESOURCE_GROUP --bastion "$BASTION_ID" >> $SCRIPTDIR/kubesetup.sh  
 
 
 
